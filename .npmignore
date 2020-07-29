@@ -1,0 +1,7 @@
+.DS_Store
+/src
+/test
+tsconfig*
+tyconfig*
+/docs
+/public
