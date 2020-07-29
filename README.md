@@ -80,7 +80,12 @@ Vue:
 
 ``` vue
 <template>
-  <VscodeColorPicker v-model="initialColor" />
+  <div id="app">
+    <VscodeColorPicker v-model="color" />
+    <!-- equivalent to -->
+    <VscodeColorPicker :color="color" @change="onColorChange" />
+    {{color}}
+  </div>
 </template>
 
 <script>
@@ -94,6 +99,11 @@ export default {
   data () {
     return {
       color: '#aaa'
+    }
+  },
+  methods: {
+    onColorChange (color) {
+      this.color = color
     }
   }
 }
