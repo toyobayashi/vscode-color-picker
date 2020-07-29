@@ -184,8 +184,6 @@ export declare namespace ColorPicker {
 }
 
 export declare class ColorPicker {
-  static readonly VERSION: string;
-
   static toColor (color: string | Color): Color;
 
   static formatColor (color: Color, type?: ColorPicker.ColorType): string;
