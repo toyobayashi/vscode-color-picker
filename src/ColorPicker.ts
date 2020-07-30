@@ -4,12 +4,13 @@ import { Color, RGBA, HSLA, HSVA } from 'vs/base/common/color'
 import { CharCode } from 'vs/base/common/charCode'
 import { IDisposable } from 'vs/base/common/lifecycle'
 
+function ThrowInvalidColor (color: unknown): never {
+  throw new TypeError(`Invalid color: ${color}`)
+}
+
 class ColorPicker implements IDisposable {
   private _model: ColorPickerModel
   private _widget: ColorPickerWidget
-
-  private _formatTypes: [1, 2, 3] = [1, 2, 3]
-  private _formatIndex: number = this._formatTypes.length - 1
 
   private _onResize: (e: UIEvent) => void
 
@@ -18,23 +19,31 @@ class ColorPicker implements IDisposable {
       return color
     }
 
+    if (typeof color !== 'string') {
+      ThrowInvalidColor(color)
+    }
+    const c = color.trim()
+
     let matches
-    if (color.charCodeAt(0) === CharCode.Hash) {
-      return Color.fromHex(color)
-    } else if (matches = color.match(/^rgb\(\s*([1-9]|[1-9][0-9]|[12][0-9][0-9])\s*,\s*([1-9]|[1-9][0-9]|[12][0-9][0-9])\s*,\s*([1-9]|[1-9][0-9]|[12][0-9][0-9])\s*\)$/)) {
+    if (c.charCodeAt(0) === CharCode.Hash) {
+      return Color.fromHex(c)
+    } else if (matches = c.match(/^rgb\(\s*([0-9]|[1-9][0-9]|[12][0-9][0-9])\s*,\s*([0-9]|[1-9][0-9]|[12][0-9][0-9])\s*,\s*([0-9]|[1-9][0-9]|[12][0-9][0-9])\s*\)$/)) {
       return new Color(new RGBA(Number(matches[1]), Number(matches[2]), Number(matches[3])))
-    } else if (matches = color.match(/^rgba\(\s*([1-9]|[1-9][0-9]|[12][0-9][0-9])\s*,\s*([1-9]|[1-9][0-9]|[12][0-9][0-9])\s*,\s*([1-9]|[1-9][0-9]|[12][0-9][0-9])\s*,\s*([01](\.[0-9]+)?)\s*\)$/)) {
+    } else if (matches = c.match(/^rgba\(\s*([0-9]|[1-9][0-9]|[12][0-9][0-9])\s*,\s*([0-9]|[1-9][0-9]|[12][0-9][0-9])\s*,\s*([0-9]|[1-9][0-9]|[12][0-9][0-9])\s*,\s*([01](\.[0-9]+)?)\s*\)$/)) {
       return new Color(new RGBA(Number(matches[1]), Number(matches[2]), Number(matches[3]), Number(matches[4])))
-    } else if (matches = color.match(/^hsl\(\s*([1-9]|[1-9][0-9]|[123][0-9][0-9])\s*,\s*([01](\.[0-9]+)?)\s*,\s*([01](\.[0-9]+)?)\s*\)$/)) {
+    } else if (matches = c.match(/^hsl\(\s*([0-9]|[1-9][0-9]|[123][0-9][0-9])\s*,\s*([01](\.[0-9]+)?)\s*,\s*([01](\.[0-9]+)?)\s*\)$/)) {
       return new Color(new HSLA(Number(matches[1]), Number(matches[2]), Number(matches[3]), 1))
-    } else if (matches = color.match(/^hsla\(\s*([1-9]|[1-9][0-9]|[123][0-9][0-9])\s*,\s*([01](\.[0-9]+)?)\s*,\s*([01](\.[0-9]+)?)\s*,\s*([01](\.[0-9]+)?)\s*\)$/)) {
+    } else if (matches = c.match(/^hsla\(\s*([0-9]|[1-9][0-9]|[123][0-9][0-9])\s*,\s*([01](\.[0-9]+)?)\s*,\s*([01](\.[0-9]+)?)\s*,\s*([01](\.[0-9]+)?)\s*\)$/)) {
       return new Color(new HSLA(Number(matches[1]), Number(matches[2]), Number(matches[3]), Number(matches[4])))
     } else {
-      throw new TypeError('Invalid color.')
+      ThrowInvalidColor(color)
     }
   }
 
   public static formatColor (color: Color, type: ColorPicker.ColorType = ColorPicker.ColorType.DEFAULT): string {
+    if (!(color instanceof Color)) {
+      ThrowInvalidColor(color)
+    }
     switch (type) {
       case ColorPicker.ColorType.DEFAULT: return color.toString()
       case ColorPicker.ColorType.RGB: return color.isOpaque() ? Color.Format.CSS.formatRGB(color) : Color.Format.CSS.formatRGBA(color)
@@ -45,24 +54,23 @@ class ColorPicker implements IDisposable {
   }
 
   public constructor (container: Node, color: string | Color = '#0000', pixelRatio: number = 1) {
-    if (typeof color === 'string') {
-      color = color.trim()
-    }
-
     const colorInstance = ColorPicker.toColor(color)
-    const label = ColorPicker.formatColor(colorInstance, this._formatTypes[this._formatIndex])
+    const label = ColorPicker.formatColor(colorInstance, ColorPicker.ColorType.RGB)
 
-    this._model = new ColorPickerModel(colorInstance, [{ label }], 0);
+    this._model = new ColorPickerModel(colorInstance, [], 0)
+    this._model.colorPresentations = [
+      { label },
+      { label: ColorPicker.formatColor(colorInstance, ColorPicker.ColorType.HEX) },
+      { label: ColorPicker.formatColor(colorInstance, ColorPicker.ColorType.HSL) },
+    ]
     
     this._model.onDidChangeColor((e) => {
-      this._model.presentation.label = ColorPicker.formatColor(e, this._formatTypes[this._formatIndex])
+      for (let i = 0; i < this._model.colorPresentations.length; i++) {
+        this._model.colorPresentations[i].label = ColorPicker.formatColor(e, i + 1)
+      }
     })
     this._model.onColorFlushed(() => {
       this._widget.body.layout()
-    })
-    this._model.onDidChangePresentation(() => {
-      this._formatIndex = (this._formatIndex + 1) % this._formatTypes.length
-      this._model.presentation.label = ColorPicker.formatColor(this._model.color, this._formatTypes[this._formatIndex])
     })
 
     this._widget = new ColorPickerWidget(container, this._model, pixelRatio/* , {
@@ -73,9 +81,8 @@ class ColorPicker implements IDisposable {
           }
         }
       }
-    } as any */);
+    } as any */)
     this._model.guessColorPresentation(colorInstance, label)
-    // this._formatIndex = 0
     this._widget.body.layout()
 
     this._onResize = (_e: UIEvent) => {
@@ -109,7 +116,7 @@ class ColorPicker implements IDisposable {
 
   public dispose (): void {
     window.removeEventListener('resize', this._onResize)
-    this._widget.dispose();
+    this._widget.dispose()
   }
 }
 
