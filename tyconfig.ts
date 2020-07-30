@@ -2,12 +2,24 @@ import { Configuration } from '@tybys/ty'
 import * as path from 'path'
 
 const config: Configuration = {
-  ts: 0,
   entry: {
     web: {
-      main: [path.join(__dirname, 'test/index.js')]
+      main1: [path.join(__dirname, 'test/index.js')],
+      main2: [path.join(__dirname, 'test/react.tsx')]
     }
   },
+  indexHtml: [
+    {
+      template: 'public/index.html',
+      filename: 'index.html',
+      chunks: ['main1']
+    },
+    {
+      template: 'public/react.html',
+      filename: 'react.html',
+      chunks: ['main2']
+    }
+  ],
   output: {
     web: 'docs'
   },
