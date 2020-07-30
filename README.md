@@ -109,3 +109,40 @@ export default {
 }
 </script>
 ```
+
+React:
+
+``` jsx
+import '@tybys/vscode-color-picker/lib/vscode-color-picker.css'
+import VscodeColorPicker from '@tybys/vscode-color-picker/lib/react/index.js'
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+class App extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      color: '#aaa'
+    }
+    this.onColorChange = this.onColorChange.bind(this)
+  }
+
+  render () {
+    return (
+      <div id='app'>
+        <VscodeColorPicker color={this.state.color} onChange={this.onColorChange} />
+        {this.state.color}
+      </div>
+    )
+  }
+
+  onColorChange (color) {
+    this.setState({
+      color
+    })
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById('app'))
+```
