@@ -5,3 +5,6 @@ tsconfig*
 tyconfig*
 /docs
 /public
+/lib/esm
+rollup.config*
+.gitattributes

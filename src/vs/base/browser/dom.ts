@@ -1,5 +1,5 @@
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
-import * as browser from 'vs/base/browser/browser';
+// import * as browser from 'vs/base/browser/browser';
 import { TimeoutTimer } from 'vs/base/common/async';
 import * as platform from 'vs/base/common/platform';
 import { BrowserFeatures } from 'vs/base/browser/canIUse';
@@ -67,59 +67,59 @@ export function removeClass(node: HTMLElement, className: string): void {
 export const EventType = {
 	// Mouse
 	CLICK: 'click',
-	AUXCLICK: 'auxclick',
-	DBLCLICK: 'dblclick',
+	// AUXCLICK: 'auxclick',
+	// DBLCLICK: 'dblclick',
 	MOUSE_UP: 'mouseup',
 	MOUSE_DOWN: 'mousedown',
-	MOUSE_OVER: 'mouseover',
-	MOUSE_MOVE: 'mousemove',
-	MOUSE_OUT: 'mouseout',
-	MOUSE_ENTER: 'mouseenter',
-	MOUSE_LEAVE: 'mouseleave',
-	MOUSE_WHEEL: browser.isEdge ? 'mousewheel' : 'wheel',
+	// MOUSE_OVER: 'mouseover',
+	// MOUSE_MOVE: 'mousemove',
+	// MOUSE_OUT: 'mouseout',
+	// MOUSE_ENTER: 'mouseenter',
+	// MOUSE_LEAVE: 'mouseleave',
+	// MOUSE_WHEEL: browser.isEdge ? 'mousewheel' : 'wheel',
 	POINTER_UP: 'pointerup',
-	POINTER_DOWN: 'pointerdown',
-	POINTER_MOVE: 'pointermove',
-	CONTEXT_MENU: 'contextmenu',
-	WHEEL: 'wheel',
+	POINTER_DOWN: 'pointerdown'
+	// POINTER_MOVE: 'pointermove',
+	// CONTEXT_MENU: 'contextmenu',
+	// WHEEL: 'wheel',
 	// Keyboard
-	KEY_DOWN: 'keydown',
-	KEY_PRESS: 'keypress',
-	KEY_UP: 'keyup',
+	// KEY_DOWN: 'keydown',
+	// KEY_PRESS: 'keypress',
+	// KEY_UP: 'keyup',
 	// HTML Document
-	LOAD: 'load',
-	BEFORE_UNLOAD: 'beforeunload',
-	UNLOAD: 'unload',
-	ABORT: 'abort',
-	ERROR: 'error',
-	RESIZE: 'resize',
-	SCROLL: 'scroll',
-	FULLSCREEN_CHANGE: 'fullscreenchange',
-	WK_FULLSCREEN_CHANGE: 'webkitfullscreenchange',
+	// LOAD: 'load',
+	// BEFORE_UNLOAD: 'beforeunload',
+	// UNLOAD: 'unload',
+	// ABORT: 'abort',
+	// ERROR: 'error',
+	// RESIZE: 'resize',
+	// SCROLL: 'scroll',
+	// FULLSCREEN_CHANGE: 'fullscreenchange',
+	// WK_FULLSCREEN_CHANGE: 'webkitfullscreenchange',
 	// Form
-	SELECT: 'select',
-	CHANGE: 'change',
-	SUBMIT: 'submit',
-	RESET: 'reset',
-	FOCUS: 'focus',
-	FOCUS_IN: 'focusin',
-	FOCUS_OUT: 'focusout',
-	BLUR: 'blur',
-	INPUT: 'input',
+	// SELECT: 'select',
+	// CHANGE: 'change',
+	// SUBMIT: 'submit',
+	// RESET: 'reset',
+	// FOCUS: 'focus',
+	// FOCUS_IN: 'focusin',
+	// FOCUS_OUT: 'focusout',
+	// BLUR: 'blur',
+	// INPUT: 'input',
 	// Local Storage
-	STORAGE: 'storage',
+	// STORAGE: 'storage',
 	// Drag
-	DRAG_START: 'dragstart',
-	DRAG: 'drag',
-	DRAG_ENTER: 'dragenter',
-	DRAG_LEAVE: 'dragleave',
-	DRAG_OVER: 'dragover',
-	DROP: 'drop',
-	DRAG_END: 'dragend',
+	// DRAG_START: 'dragstart',
+	// DRAG: 'drag',
+	// DRAG_ENTER: 'dragenter',
+	// DRAG_LEAVE: 'dragleave',
+	// DRAG_OVER: 'dragover',
+	// DROP: 'drop',
+	// DRAG_END: 'dragend',
 	// Animation
-	ANIMATION_START: browser.isWebKit ? 'webkitAnimationStart' : 'animationstart',
-	ANIMATION_END: browser.isWebKit ? 'webkitAnimationEnd' : 'animationend',
-	ANIMATION_ITERATION: browser.isWebKit ? 'webkitAnimationIteration' : 'animationiteration'
+	// ANIMATION_START: browser.isWebKit ? 'webkitAnimationStart' : 'animationstart',
+	// ANIMATION_END: browser.isWebKit ? 'webkitAnimationEnd' : 'animationend',
+	// ANIMATION_ITERATION: browser.isWebKit ? 'webkitAnimationIteration' : 'animationiteration'
 } as const;
 
 export interface DOMEvent {

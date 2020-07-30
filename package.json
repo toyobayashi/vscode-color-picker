@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "The color picker of Visual Studio Code.",
   "main": "./lib/vscode-color-picker.js",
+  "module": "./lib/vscode-color-picker.esm.js",
   "typings": "./lib/vscode-color-picker.d.ts",
   "keywords": [
     "vscode",
@@ -20,13 +21,17 @@
     "access": "public"
   },
   "scripts": {
-    "build": "ty build --config=tyconfig.lib.ts",
+    "build": "tsc -p ./tsconfig.json&&node ./rollup.config.js",
     "serve:test": "ty serve",
     "build:test": "ty build"
   },
   "devDependencies": {
+    "@rollup/plugin-alias": "^3.1.1",
     "@tybys/ty": "^0.10.3",
     "@types/node": "^14.0.26",
+    "cssnano": "^4.1.10",
+    "rollup": "^2.23.0",
+    "rollup-plugin-terser": "^6.1.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   }
