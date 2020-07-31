@@ -3,6 +3,7 @@ import { ColorPickerModel } from 'vs/editor/contrib/colorPicker/ColorPickerModel
 import { Color, RGBA, HSLA, HSVA } from 'vs/base/common/color'
 import { CharCode } from 'vs/base/common/charCode'
 import { IDisposable } from 'vs/base/common/lifecycle'
+import { Emitter, Event } from 'vs/base/common/event'
 
 function ThrowInvalidColor (color: unknown): never {
   throw new TypeError(`Invalid color: ${color}`)
@@ -53,7 +54,11 @@ class ColorPicker implements IDisposable {
 
   public static formatColor (color: Color, type: ColorPicker.ColorType = ColorPicker.ColorType.DEFAULT): string {
     if (!(color instanceof Color)) {
-      ThrowInvalidColor(color)
+      try {
+        color = ColorPicker.toColor(color)
+      } catch (err) {
+        throw err
+      }
     }
     switch (type) {
       case ColorPicker.ColorType.DEFAULT: return color.toString()
@@ -82,13 +87,15 @@ class ColorPicker implements IDisposable {
     //   { label: ColorPicker.formatColor(colorInstance, ColorPicker.ColorType.HSL) },
     // ]
     
-    // this._model.onDidChangeColor((e) => {
-    //   for (let i = 0; i < this._model.colorPresentations.length; i++) {
-    //     this._model.colorPresentations[i].label = ColorPicker.formatColor(e, i + 1)
-    //   }
-    // })
-    this._model.onColorFlushed(() => {
+    this._model.onDidChangeColor((e) => {
+      this._onDidChangeColor.fire(e)
+    })
+    this._model.onColorFlushed((e) => {
+      this._onColorFlushed.fire(e)
       this._widget.body.layout()
+    })
+    this._model.onDidChangePresentation((e) => {
+      this._onDidChangePresentation.fire(e)
     })
 
     this._widget = new ColorPickerWidget(container, this._model, pixelRatio/* , {
@@ -101,7 +108,7 @@ class ColorPicker implements IDisposable {
       }
     } as any */)
     
-    if (presentations[presentationIndex]) {
+    if (presentations[presentationIndex] && presentations[presentationIndex].label) {
       this._model.guessColorPresentation(colorInstance, presentations[presentationIndex].label)
       this._widget.body.layout()
     }
@@ -174,19 +181,19 @@ class ColorPicker implements IDisposable {
     (colorBox as HTMLDivElement).style.backgroundColor = Color.Format.CSS.format((this._model as any).originalColor) || ''
   }
 
-  public onColorChanged (listener: (color: Color) => any, thisArg?: any): void {
-    this._model.onDidChangeColor(listener, thisArg)
-  }
+  private readonly _onColorFlushed = new Emitter<Color>();
+	public readonly onColorFlushed: Event<Color> = this._onColorFlushed.event;
 
-  public onColorFlushed (listener: (color: Color) => any, thisArg?: any): void {
-    this._model.onColorFlushed(listener, thisArg)
-  }
+	private readonly _onDidChangeColor = new Emitter<Color>();
+	public readonly onColorChanged: Event<Color> = this._onDidChangeColor.event;
 
-  public onPresentationChanged (listener: (presentation: ColorPickerPresentation) => any, thisArg?: any): void {
-    this._model.onDidChangePresentation(listener, thisArg)
-  }
+	private readonly _onDidChangePresentation = new Emitter<ColorPickerPresentation>();
+	public readonly onPresentationChanged: Event<ColorPickerPresentation> = this._onDidChangePresentation.event;
 
   public dispose (): void {
+    this._onDidChangeColor.dispose()
+    this._onColorFlushed.dispose()
+    this._onDidChangePresentation.dispose()
     window.removeEventListener('resize', this._onResize)
     this._widget.dispose()
   }

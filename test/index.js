@@ -49,9 +49,15 @@ new Vue({
     ])
   },
   methods: {
+    updatePresentations () {
+      this.presentations[0].label = ColorPicker.formatColor(this.color, ColorPicker.ColorType.RGB)
+      this.presentations[1].label = ColorPicker.formatColor(this.color, ColorPicker.ColorType.HEX)
+      this.presentations[2].label = ColorPicker.formatColor(this.color, ColorPicker.ColorType.HSL)
+    },
     onClickSet () {
       this.color = '#89a'
       this.originalColor = this.color
+      this.updatePresentations()
       // this.$refs.picker.setOriginalColor('#987')
     },
     onClick () {
@@ -69,10 +75,7 @@ new Vue({
     },
     onChange (e) {
       this.color = ColorPicker.formatColor(e, ColorPicker.ColorType.RGB)
-      this.presentations[0].label = ColorPicker.formatColor(e, ColorPicker.ColorType.RGB)
-      this.presentations[1].label = ColorPicker.formatColor(e, ColorPicker.ColorType.HEX)
-      this.presentations[2].label = ColorPicker.formatColor(e, ColorPicker.ColorType.HSL)
-      // console.log(e.toString())
+      this.updatePresentations()
     }
   }
 }).$mount('#test')

@@ -194,6 +194,14 @@ export declare namespace ColorPicker {
   }
 }
 
+export declare interface IDisposable {
+	dispose(): void;
+}
+
+export interface Event<T> {
+	(listener: (e: T) => any, thisArgs?: any): IDisposable;
+}
+
 export declare class ColorPicker {
   static toColor (color: string | Color): Color;
 
@@ -221,11 +229,11 @@ export declare class ColorPicker {
 
   setOriginalColor (color: string | Color): void;
 
-  onColorChanged (listener: (color: Color) => any, thisArg?: any): void;
+  readonly onColorChanged: Event<Color>;
 
-  onColorFlushed (listener: (color: Color) => any, thisArg?: any): void;
+  readonly onColorFlushed: Event<Color>;
 
-  onPresentationChanged (listener: (presentation: ColorPickerPresentation) => any, thisArg?: any): void;
+  readonly onPresentationChanged: Event<ColorPickerPresentation>;
 
   dispose (): void;
 }

@@ -59,11 +59,20 @@ class App extends React.Component<{}, {
       </div>
     )
   }
+
+  updatePresentations (color) {
+    this.state.presentations[0].label = ColorPicker.formatColor(color, ColorPicker.ColorType.RGB)
+    this.state.presentations[1].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HEX)
+    this.state.presentations[2].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HSL)
+  }
+
   onClickSet () {
+    const color = '#89a'
+    this.updatePresentations(color)
     this.setState(() => {
       return {
-        color: '#89a',
-        originalColor: '#89a'
+        color,
+        originalColor: color
       }
     })
     // this.picker.setOriginalColor('#987')
@@ -79,9 +88,7 @@ class App extends React.Component<{}, {
   }
 
   onChange (e) {
-    this.state.presentations[0].label = ColorPicker.formatColor(e, ColorPicker.ColorType.RGB)
-    this.state.presentations[1].label = ColorPicker.formatColor(e, ColorPicker.ColorType.HEX)
-    this.state.presentations[2].label = ColorPicker.formatColor(e, ColorPicker.ColorType.HSL)
+    this.updatePresentations(e)
     this.setState({
       color: ColorPicker.formatColor(e, ColorPicker.ColorType.RGB)
     })
