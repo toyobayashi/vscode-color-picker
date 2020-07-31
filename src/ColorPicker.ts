@@ -100,9 +100,11 @@ class ColorPicker implements IDisposable {
         }
       }
     } as any */)
-
-    this._model.guessColorPresentation(colorInstance, presentations[presentationIndex].label)
-    this._widget.body.layout()
+    
+    if (presentations[presentationIndex]) {
+      this._model.guessColorPresentation(colorInstance, presentations[presentationIndex].label)
+      this._widget.body.layout()
+    }
 
     this._onResize = (_e: UIEvent) => {
       this._widget.body.layout()

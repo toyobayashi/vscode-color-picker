@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VscodeColorPickerReact</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vscode-color-picker.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script src="https://cdn.jsdelivr.net/npm/react@16/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@16/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vscode-color-picker.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/react/global.js"></script>
+  <script>
+    (function () {
+      function App (props) {
+        React.Component.call(this, props);
+        this.state = {
+          color: '#aaa'
+        };
+        var _this = this;
+        this.onChange = function (color) {
+          _this.setState({
+            color: color
+          });
+        };
+      }
+      function _() { this.constructor = App; }
+      _.prototype = React.Component.prototype;
+      App.prototype = new _();
+
+      App.prototype.render = function render () {
+        return React.createElement('div', {}, [
+          React.createElement(VscodeColorPickerReact, {
+            color: this.state.color,
+            onChange: this.onChange
+          }, []),
+          React.createElement('p', {}, this.state.color.toString())
+        ]);
+      };
+
+      ReactDOM.render(React.createElement(App), document.getElementById('app'));
+    })();
+  </script>
+</body>
+</html>
