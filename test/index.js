@@ -4,22 +4,35 @@ import { ColorPicker } from '..'
 
 new Vue({
   data () {
-    let initialColor = '#aaa'
+    let initialColor = '#187'
+    const color = ColorPicker.toColor(initialColor)
     return {
       show: true,
       color: initialColor,
-      originalColor: initialColor
+      originalColor: initialColor,
+      presentationIndex: 0,
+      pixelRatio: 1,
+      presentations: [
+        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB) },
+        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HEX) },
+        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HSL) },
+      ]
     }
   },
   render (h) {
     return h('div', { id: 'test' }, [
       ...(this.show ? [h(VscodeColorPicker, {
         props: {
-          color: this.color
+          color: this.color,
+          presentations: this.presentations,
+          presentationIndex: this.presentationIndex,
+          pixelRatio: this.pixelRatio
         },
         on: {
-          change: this.onChange
-        }
+          change: this.onChange,
+          presentation: (p, i) => console.log(p, i)
+        },
+        ref: 'picker'
       })] : []),
       h('button', {
         on: {
@@ -39,6 +52,7 @@ new Vue({
     onClickSet () {
       this.color = '#89a'
       this.originalColor = this.color
+      // this.$refs.picker.setOriginalColor('#987')
     },
     onClick () {
       this.show = !this.show
@@ -55,6 +69,9 @@ new Vue({
     },
     onChange (e) {
       this.color = ColorPicker.formatColor(e, ColorPicker.ColorType.RGB)
+      this.presentations[0].label = ColorPicker.formatColor(e, ColorPicker.ColorType.RGB)
+      this.presentations[1].label = ColorPicker.formatColor(e, ColorPicker.ColorType.HEX)
+      this.presentations[2].label = ColorPicker.formatColor(e, ColorPicker.ColorType.HSL)
       // console.log(e.toString())
     }
   }

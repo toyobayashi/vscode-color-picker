@@ -9,59 +9,55 @@
 纯 JS：
 
 ``` html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VscodeColorPicker</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vscode-color-picker.css">
-</head>
-<body>
-  <div id="container"></div>
-  <script src="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vscode-color-picker.js"></script>
-  <script>
-    (function () {
-      var initialColor = '#aaa';
-      var picker = new vscodeColorPicker.ColorPicker(document.getElementById('container'), initialColor);
-    })();
-  </script>
-</body>
-</html>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vscode-color-picker.css">
+
+<div id="container"></div>
+
+<script src="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vscode-color-picker.js"></script>
+<script>
+  (function () {
+    var ColorPicker = vscodeColorPicker.ColorPicker;
+    var initialColor = '#aaa';
+    var color = ColorPicker.toColor(initialColor);
+    var presentations = [
+      { label: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB) },
+      { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HEX) },
+      { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HSL) },
+    ];
+    var picker = new ColorPicker(document.getElementById('container'), {
+      color: initialColor,
+      presentations: presentations
+    });
+    picker.onColorChanged(function (color) {
+      var pickerPresentations = picker.getPresentations();
+      pickerPresentations[0].label = ColorPicker.formatColor(color, ColorPicker.ColorType.RGB);
+      pickerPresentations[1].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HEX);
+      pickerPresentations[2].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HSL);
+    });
+  })();
+</script>
 ```
 
 Vue：
 
 ``` html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VscodeColorPickerVue</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vscode-color-picker.css">
-</head>
-<body>
-  <div id="app"></div>
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vscode-color-picker.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vue/global.js"></script>
-  <script>
-    (function () {
-      // Vue.component('VscodeColorPicker', VscodeColorPickerVue);
-      new Vue({
-        components: {
-          VscodeColorPicker: VscodeColorPickerVue
-        },
-        data: {
-          color: '#aaa'
-        },
-        template: '<div><vscode-color-picker v-model="color"></vscode-color-picker><p>{{color}}</p></div>'
-      }).$mount('#app');
-    })();
-  </script>
-</body>
-</html>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vscode-color-picker.css">
+
+<div id="app"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vscode-color-picker.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/toyobayashi/vscode-color-picker/lib/vue/global.js"></script>
+<script>
+  (function () {
+    // Vue.component('VscodeColorPicker', VscodeColorPickerVue);
+    new Vue({
+      components: {
+        VscodeColorPicker: VscodeColorPickerVue
+      }
+    }).$mount('#app');
+  })();
+</script>
 ```
 
 ### Webpack
@@ -81,15 +77,14 @@ Vue：
 ``` vue
 <template>
   <div id="app">
-    <VscodeColorPicker v-model="color" />
-    <!-- 相当于 -->
-    <VscodeColorPicker :color="color" @change="onColorChange" />
+    <VscodeColorPicker :color="color" @change="onColorChange" :presentations="presentations" />
     {{color}}
   </div>
 </template>
 
 <script>
 import '@tybys/vscode-color-picker/lib/vscode-color-picker.css'
+import { ColorPicker } from '@tybys/vscode-color-picker'
 import VscodeColorPicker from '@tybys/vscode-color-picker/lib/vue/index.js'
 
 export default {
@@ -97,13 +92,23 @@ export default {
     VscodeColorPicker
   },
   data () {
+    const initialColor = '#aaa'
+    const color = ColorPicker.toColor(initialColor)
     return {
-      color: '#aaa'
+      color: initialColor,
+      presentations: [
+        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB) },
+        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HEX) },
+        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HSL) },
+      ]
     }
   },
   methods: {
     onColorChange (color) {
       this.color = color
+      this.presentations[0].label = ColorPicker.formatColor(color, ColorPicker.ColorType.RGB)
+      this.presentations[1].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HEX)
+      this.presentations[2].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HSL)
     }
   }
 }
@@ -114,6 +119,7 @@ React：
 
 ``` jsx
 import '@tybys/vscode-color-picker/lib/vscode-color-picker.css'
+import { ColorPicker } from '@tybys/vscode-color-picker'
 import VscodeColorPicker from '@tybys/vscode-color-picker/lib/react/index.js'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -122,8 +128,15 @@ class App extends React.Component {
   constructor (props) {
     super(props)
 
+    const initialColor = '#aaa'
+    const color = ColorPicker.toColor(initialColor)
     this.state = {
-      color: '#aaa'
+      color: initialColor,
+      presentations: [
+        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB) },
+        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HEX) },
+        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HSL) },
+      ]
     }
     this.onColorChange = this.onColorChange.bind(this)
   }
@@ -131,13 +144,16 @@ class App extends React.Component {
   render () {
     return (
       <div id='app'>
-        <VscodeColorPicker color={this.state.color} onChange={this.onColorChange} />
+        <VscodeColorPicker color={this.state.color} presentations={this.state.presentations} onChange={this.onColorChange} />
         {this.state.color}
       </div>
     )
   }
 
   onColorChange (color) {
+    this.state.presentations[0].label = ColorPicker.formatColor(e, ColorPicker.ColorType.RGB)
+    this.state.presentations[1].label = ColorPicker.formatColor(e, ColorPicker.ColorType.HEX)
+    this.state.presentations[2].label = ColorPicker.formatColor(e, ColorPicker.ColorType.HSL)
     this.setState({
       color
     })
@@ -159,6 +175,14 @@ ReactDOM.render(<App />, document.getElementById('app'))
 
     可以是 RGB / HEX / HSL。
 
+* presentations: `vscodeColorPicker.ColorPickerPresentation[]`
+
+    颜色栏中显示的字符串，点击后可循环数组切换显示。
+
+* presentationIndex: `number`
+
+    最开始要显示的 presentation 在 presentations 中的索引。
+
 * pixelRatio: `number`
 
     颜色画布的像素缩放比例。
@@ -173,12 +197,42 @@ ReactDOM.render(<App />, document.getElementById('app'))
 
     当鼠标放开时或还原颜色后触发。参数是最终确定的颜色。
 
-* presentation: `(e: string) => any`
+* presentation: `(e: vscodeColorPicker.ColorPickerPresentation, index: number) => any`
 
-    当点击最上方左侧的当前选中颜色栏时触发。参数是颜色栏中显示的字符串。
-
-#### Vue 组件双向绑定使用的属性和事件
+    当点击最上方左侧的当前选中颜色栏时触发。参数是颜色栏中显示的字符串和它在数组中的索引。
 
 `v-model="color"` 等价于 `:color="color" @change="color = $event"`
 
-注意：原始颜色无法设置，必须销毁组件后重新挂载组件（Vue 可通过切换 `v-if`），组件创建时传进去的 `color` 属性为原始颜色。
+如果要设置右上角的原始颜色，Vue 通过 `ref` 直接调用组件的 `setOriginalColor(color: string | vscodeColorPicker.Color): void` 方法。
+
+``` vue
+<template>
+<VscodeColorPicker ref="picker" />
+</template>
+
+<script>
+export default {
+  methods: {
+    onSomeEvent () {
+      this.$refs.picker.setOriginalColor('#987')
+    }
+  }
+}
+</script>
+```
+
+React 在父组件通过 `onCreate` 事件获取组件实例后再调用实例方法 `setOriginalColor(color: string | vscodeColorPicker.Color): void`。
+
+``` jsx
+class App extends React.Component {
+  constructor (props) { /* ... */ }
+
+  render () {
+    return <VscodeColorPicker onCreate={(instance) => { this.picker = instance }}>
+  }
+
+  onSomeEvent () {
+    this.picker.setOriginalColor('#987')
+  }
+}
+```

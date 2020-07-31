@@ -174,6 +174,17 @@ export declare class Color {
 	static readonly transparent: Color;
 }
 
+export declare interface ColorPickerPresentation {
+  label: string
+}
+
+export declare interface ColorPickerProps {
+  color?: string | Color
+  presentations?: ColorPickerPresentation[]
+  presentationIndex?: number
+  pixelRatio?: number
+}
+
 export declare namespace ColorPicker {
   export enum ColorType {
     DEFAULT,
@@ -188,17 +199,33 @@ export declare class ColorPicker {
 
   static formatColor (color: Color, type?: ColorPicker.ColorType): string;
 
-  constructor (container: Node, color?: string | Color, pixelRatio?: number);
+  constructor (container: Node, props?: ColorPickerProps);
 
   getColor (): Color;
 
-  setColor (color: string | Color): void;
+	setColor (color: string | Color): void;
+	
+	getPresentations (): ColorPickerPresentation[];
+
+  setPresentations (presentations: ColorPickerPresentation[]): void;
+
+  getPresentationIndex (): number;
+
+  setPresentationIndex (index: number): void;
+
+  getPixelRatio (): number;
+
+  setPixelRatio (ratio: number): void;
+
+  getOriginalColor (): Color;
+
+  setOriginalColor (color: string | Color): void;
 
   onColorChanged (listener: (color: Color) => any, thisArg?: any): void;
 
   onColorFlushed (listener: (color: Color) => any, thisArg?: any): void;
 
-  onPresentationChanged (listener: (label: string) => any, thisArg?: any): void;
+  onPresentationChanged (listener: (presentation: ColorPickerPresentation) => any, thisArg?: any): void;
 
   dispose (): void;
 }
