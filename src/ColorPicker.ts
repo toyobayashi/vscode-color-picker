@@ -1,5 +1,5 @@
 import { ColorPickerWidget } from 'vs/editor/contrib/colorPicker/colorPickerWidget'
-import { ColorPickerModel } from 'vs/editor/contrib/colorPicker/ColorPickerModel'
+import { ColorPickerModel } from 'vs/editor/contrib/colorPicker/colorPickerModel'
 import { Color, RGBA, HSLA, HSVA } from 'vs/base/common/color'
 import { CharCode } from 'vs/base/common/charCode'
 import { IDisposable } from 'vs/base/common/lifecycle'

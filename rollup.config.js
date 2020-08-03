@@ -33,7 +33,7 @@ function getRollupConfig (opts) {
         }),
         rollupAlias({
           entries: [
-            { find: /vs\/(.+)/, replacement: getPath(inputPrefix, 'vs') + '/$1.js' }
+            { find: /^vs\/(.+)/, replacement: getPath(inputPrefix, 'vs') + '/$1.js' }
           ]
         }),
         {
