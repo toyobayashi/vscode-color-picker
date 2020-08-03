@@ -204,7 +204,7 @@ export declare class ColorPicker {
 	
 	static get version(): string;
 
-  constructor (container: Node, props?: ColorPickerProps);
+  constructor (container: HTMLElement, props?: ColorPickerProps);
 
   getColor (): Color;
 

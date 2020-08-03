@@ -66,7 +66,7 @@ class ColorPicker implements IDisposable {
     }
   }
 
-  public constructor (container: Node, props?: ColorPickerProps) {
+  public constructor (private container: HTMLElement, props?: ColorPickerProps) {
     const _props: ColorPickerProps = props ?? {}
     const color = _props.color ?? '#0000'
     const presentation = _props.presentation ?? ''
@@ -90,7 +90,7 @@ class ColorPicker implements IDisposable {
       this._onDidChangePresentation.fire((e && e.label) ?? '')
     })
 
-    this._widget = new ColorPickerWidget(container, this._model, pixelRatio)
+    this._widget = new ColorPickerWidget(this.container, this._model, pixelRatio)
 
     if (presentations[presentationIndex] && presentations[presentationIndex].label) {
       this._model.guessColorPresentation(colorInstance, presentations[presentationIndex].label)
@@ -118,8 +118,8 @@ class ColorPicker implements IDisposable {
 
   public setPresentation (presentation: string): void {
     this._model.colorPresentations[0].label = presentation
-    const pickedColorNode = document.getElementsByClassName('picked-color')[0]
-    if (pickedColorNode) {
+    const pickedColorNode = this.container.getElementsByClassName('picked-color')[0]
+    if (pickedColorNode !== undefined) {
       pickedColorNode.textContent = this._model.presentation ? this._model.presentation.label : ''
     }
   }
@@ -144,7 +144,7 @@ class ColorPicker implements IDisposable {
   }
 
   public setOriginalColor (color: string | Color): void {
-    const colorBox: Element | undefined = document.getElementsByClassName('original-color')[0]
+    const colorBox: Element | undefined = this.container.getElementsByClassName('original-color')[0]
     if (colorBox === undefined) {
       return
     }
