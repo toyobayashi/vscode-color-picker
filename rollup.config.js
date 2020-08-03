@@ -20,6 +20,7 @@ function getRollupConfig (opts) {
 
   const rollupTerser = require('rollup-plugin-terser').terser
   const rollupAlias = require('@rollup/plugin-alias')
+  const rollupReplace = require('@rollup/plugin-replace')
 
   const outputFilename = minify ? getPath(outputPrefix, `${output}.min.js`) : getPath(outputPrefix, `${output}.js`)
   const fmt = format || 'umd'
@@ -27,6 +28,9 @@ function getRollupConfig (opts) {
     input: {
       input: getPath(entry),
       plugins: [
+        rollupReplace({
+          __PKG_VERSION__: JSON.stringify(require('./package.json').version)
+        }),
         rollupAlias({
           entries: [
             { find: /vs\/(.+)/, replacement: getPath(inputPrefix, 'vs') + '/$1.js' }

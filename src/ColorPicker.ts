@@ -5,6 +5,8 @@ import { CharCode } from 'vs/base/common/charCode'
 import { IDisposable } from 'vs/base/common/lifecycle'
 import { Emitter, Event } from 'vs/base/common/event'
 
+declare const __PKG_VERSION__: string
+
 function ThrowInvalidColor (color: unknown): never {
   throw new TypeError(`Invalid color: ${color}`)
 }
@@ -165,6 +167,10 @@ class ColorPicker implements IDisposable {
     this._onDidChangePresentation.dispose()
     window.removeEventListener('resize', this._onResize)
     this._widget.dispose()
+  }
+
+  public static get version (): string {
+    return __PKG_VERSION__
   }
 }
 

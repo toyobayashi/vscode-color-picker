@@ -200,7 +200,9 @@ export interface Event<T> {
 export declare class ColorPicker {
   static toColor (color: string | Color): Color;
 
-  static formatColor (color: string | Color, type?: ColorPicker.ColorType): string;
+	static formatColor (color: string | Color, type?: ColorPicker.ColorType): string;
+	
+	static get version(): string;
 
   constructor (container: Node, props?: ColorPickerProps);
 
