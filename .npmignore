@@ -8,3 +8,4 @@ tyconfig*
 /lib/esm
 rollup.config*
 .gitattributes
+.github
