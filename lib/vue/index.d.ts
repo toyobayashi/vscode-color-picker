@@ -6,13 +6,9 @@ declare interface PropsDef {
     type: [StringConstructor, typeof Color];
     default: string;
   };
-  presentations: {
-    type: ArrayConstructor;
-    default: any[];
-  };
-  presentationIndex: {
-    type: NumberConstructor;
-    default: number;
+  presentation: {
+    type: StringConstructor;
+    default: string;
   };
   pixelRatio: {
     type: NumberConstructor;

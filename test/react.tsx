@@ -1,7 +1,7 @@
 import '../lib/vscode-color-picker.css'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { ColorPicker, ColorPickerPresentation } from '..'
+import { ColorPicker } from '..'
 import VscodeColorPicker from '../lib/react/index'
 
 // declare const React: typeof import('react')
@@ -11,11 +11,12 @@ class App extends React.Component<{}, {
   show: boolean;
   color: string;
   originalColor: string;
-  presentationIndex: number;
+  presentation: string;
   pixelRatio: number;
-  presentations: ColorPickerPresentation[];
 }> {
   private picker: VscodeColorPicker | null = null
+  private colorTypes: ColorPicker.ColorType[] = [ColorPicker.ColorType.RGB, ColorPicker.ColorType.HEX, ColorPicker.ColorType.HSL]
+  private activeType: number = 0
   constructor (props) {
     super(props)
 
@@ -26,13 +27,8 @@ class App extends React.Component<{}, {
       show: true,
       color: initialColor,
       originalColor: initialColor,
-      presentationIndex: 0,
-      pixelRatio: 1,
-      presentations: [
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB) },
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HEX) },
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HSL) },
-      ]
+      presentation: ColorPicker.formatColor(color, this.colorTypes[this.activeType]),
+      pixelRatio: 1
     }
 
     this.onChange = this.onChange.bind(this)
@@ -46,11 +42,16 @@ class App extends React.Component<{}, {
         {this.state.show ? <VscodeColorPicker
           onCreate={(instance) => { this.picker = instance }}
           color={this.state.color}
-          presentations={this.state.presentations}
-          presentationIndex={this.state.presentationIndex}
+          presentation={this.state.presentation}
           pixelRatio={this.state.pixelRatio}
           onChange={this.onChange}
-          onPresentation={(p, i) => console.log(p, i)}
+          onPresentation={(p) => {
+            console.log(p)
+            this.activeType = (this.activeType + 1) % this.colorTypes.length
+            this.setState({
+              presentation: ColorPicker.formatColor(this.state.color, this.colorTypes[this.activeType]),
+            })
+          }}
         /> : undefined}
         <button onClick={this.onClick}>{this.state.show ? 'confirm' : 'pick'}</button>
         <button onClick={this.onClickSet}>set</button>
@@ -60,19 +61,13 @@ class App extends React.Component<{}, {
     )
   }
 
-  updatePresentations (color) {
-    this.state.presentations[0].label = ColorPicker.formatColor(color, ColorPicker.ColorType.RGB)
-    this.state.presentations[1].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HEX)
-    this.state.presentations[2].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HSL)
-  }
-
   onClickSet () {
     const color = '#89a'
-    this.updatePresentations(color)
-    this.setState(() => {
+    this.setState((prevState) => {
       return {
         color,
-        originalColor: color
+        ...(prevState.show ? {} as any : { originalColor: color }),
+        presentation: ColorPicker.formatColor(color, this.colorTypes[this.activeType])
       }
     })
     // this.picker.setOriginalColor('#987')
@@ -88,9 +83,9 @@ class App extends React.Component<{}, {
   }
 
   onChange (e) {
-    this.updatePresentations(e)
     this.setState({
-      color: ColorPicker.formatColor(e, ColorPicker.ColorType.RGB)
+      color: ColorPicker.formatColor(e, ColorPicker.ColorType.RGB),
+      presentation: ColorPicker.formatColor(e, this.colorTypes[this.activeType])
     })
   }
 }

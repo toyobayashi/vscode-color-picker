@@ -9,14 +9,9 @@ function ThrowInvalidColor (color: unknown): never {
   throw new TypeError(`Invalid color: ${color}`)
 }
 
-export interface ColorPickerPresentation {
-  label: string
-}
-
 export interface ColorPickerProps {
   color?: string | Color
-  presentations?: ColorPickerPresentation[]
-  presentationIndex?: number
+  presentation?: string
   pixelRatio?: number
 }
 
@@ -52,7 +47,7 @@ class ColorPicker implements IDisposable {
     }
   }
 
-  public static formatColor (color: Color, type: ColorPicker.ColorType = ColorPicker.ColorType.DEFAULT): string {
+  public static formatColor (color: string | Color, type: ColorPicker.ColorType = ColorPicker.ColorType.DEFAULT): string {
     if (!(color instanceof Color)) {
       try {
         color = ColorPicker.toColor(color)
@@ -72,21 +67,16 @@ class ColorPicker implements IDisposable {
   public constructor (container: Node, props?: ColorPickerProps) {
     const _props: ColorPickerProps = props ?? {}
     const color = _props.color ?? '#0000'
-    const presentations = _props.presentations ?? []
-    const presentationIndex = _props.presentationIndex ?? 0
+    const presentation = _props.presentation ?? ''
+    const presentations = [{ label: presentation }]
+    const presentationIndex = 0
     const pixelRatio = _props.pixelRatio ?? 1
 
     const colorInstance = ColorPicker.toColor(color)
-    // const label = ColorPicker.formatColor(colorInstance, ColorPicker.ColorType.RGB)
 
     this._model = new ColorPickerModel(colorInstance, [], presentationIndex)
     this._model.colorPresentations = presentations
-    // this._model.colorPresentations = [
-    //   { label },
-    //   { label: ColorPicker.formatColor(colorInstance, ColorPicker.ColorType.HEX) },
-    //   { label: ColorPicker.formatColor(colorInstance, ColorPicker.ColorType.HSL) },
-    // ]
-    
+
     this._model.onDidChangeColor((e) => {
       this._onDidChangeColor.fire(e)
     })
@@ -95,19 +85,11 @@ class ColorPicker implements IDisposable {
       this._widget.body.layout()
     })
     this._model.onDidChangePresentation((e) => {
-      this._onDidChangePresentation.fire(e)
+      this._onDidChangePresentation.fire((e && e.label) ?? '')
     })
 
-    this._widget = new ColorPickerWidget(container, this._model, pixelRatio/* , {
-      getColorTheme () {
-        return {
-          getColor () {
-            return undefined
-          }
-        }
-      }
-    } as any */)
-    
+    this._widget = new ColorPickerWidget(container, this._model, pixelRatio)
+
     if (presentations[presentationIndex] && presentations[presentationIndex].label) {
       this._model.guessColorPresentation(colorInstance, presentations[presentationIndex].label)
       this._widget.body.layout()
@@ -128,29 +110,16 @@ class ColorPicker implements IDisposable {
     this._widget.body.layout()
   }
 
-  public getPresentations (): ColorPickerPresentation[] {
-    return this._model.colorPresentations
+  public getPresentation (): string {
+    return this._model.presentation.label
   }
 
-  public setPresentations (presentations: ColorPickerPresentation[]): void {
-    this._model.colorPresentations = presentations
-  }
-
-  public getPresentationIndex (): number {
-    return (this._model as any).presentationIndex
-  }
-
-  public setPresentationIndex (index: number): void {
-    if (index === (this._model as any).presentationIndex) return
-    if (index > this._model.colorPresentations.length - 1 || index < 0) {
-      throw new RangeError(`Presentation index out of range: ${index}, [0, ${this._model.colorPresentations.length - 1}]`)
+  public setPresentation (presentation: string): void {
+    this._model.colorPresentations[0].label = presentation
+    const pickedColorNode = document.getElementsByClassName('picked-color')[0]
+    if (pickedColorNode) {
+      pickedColorNode.textContent = this._model.presentation ? this._model.presentation.label : ''
     }
-    if (index > this._model.colorPresentations.length - 1 || index < 0) {
-			(this._model as any).presentationIndex = 0
-		} else {
-      (this._model as any).presentationIndex = index
-    }
-    (this._model as any)._onDidChangePresentation.fire(this._model.presentation)
   }
 
   public getPixelRatio (): number {
@@ -187,8 +156,8 @@ class ColorPicker implements IDisposable {
 	private readonly _onDidChangeColor = new Emitter<Color>();
 	public readonly onColorChanged: Event<Color> = this._onDidChangeColor.event;
 
-	private readonly _onDidChangePresentation = new Emitter<ColorPickerPresentation>();
-	public readonly onPresentationChanged: Event<ColorPickerPresentation> = this._onDidChangePresentation.event;
+	private readonly _onDidChangePresentation = new Emitter<string>();
+	public readonly onPresentationChanged: Event<string> = this._onDidChangePresentation.event;
 
   public dispose (): void {
     this._onDidChangeColor.dispose()

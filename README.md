@@ -19,20 +19,12 @@ Pure JavaScript:
     var ColorPicker = vscodeColorPicker.ColorPicker;
     var initialColor = '#aaa';
     var color = ColorPicker.toColor(initialColor);
-    var presentations = [
-      { label: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB) },
-      { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HEX) },
-      { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HSL) },
-    ];
     var picker = new ColorPicker(document.getElementById('container'), {
       color: initialColor,
-      presentations: presentations
+      presentation: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB)
     });
     picker.onColorChanged(function (color) {
-      var pickerPresentations = picker.getPresentations();
-      pickerPresentations[0].label = ColorPicker.formatColor(color, ColorPicker.ColorType.RGB);
-      pickerPresentations[1].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HEX);
-      pickerPresentations[2].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HSL);
+      picker.setPresentation(ColorPicker.formatColor(color, ColorPicker.ColorType.RGB));
     });
   })();
 </script>
@@ -74,7 +66,7 @@ Vue:
 ``` vue
 <template>
   <div id="app">
-    <VscodeColorPicker :color="color" @change="onColorChange" :presentations="presentations" />
+    <VscodeColorPicker :color="color" @change="onColorChange" :presentation="presentation" />
     {{color}}
   </div>
 </template>
@@ -89,23 +81,18 @@ export default {
     VscodeColorPicker
   },
   data () {
-    const initialColor = '#aaa'
-    const color = ColorPicker.toColor(initialColor)
     return {
-      color: initialColor,
-      presentations: [
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB) },
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HEX) },
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HSL) },
-      ]
+      color: '#aaa'
+    }
+  },
+  computed: {
+    presentation () {
+      return ColorPicker.formatColor(this.color, ColorPicker.ColorType.RGB)
     }
   },
   methods: {
     onColorChange (color) {
       this.color = color
-      this.presentations[0].label = ColorPicker.formatColor(color, ColorPicker.ColorType.RGB)
-      this.presentations[1].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HEX)
-      this.presentations[2].label = ColorPicker.formatColor(color, ColorPicker.ColorType.HSL)
     }
   }
 }
@@ -129,11 +116,7 @@ class App extends React.Component {
     const color = ColorPicker.toColor(initialColor)
     this.state = {
       color: initialColor,
-      presentations: [
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB) },
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HEX) },
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HSL) },
-      ]
+      presentation: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB)
     }
     this.onColorChange = this.onColorChange.bind(this)
   }
@@ -141,18 +124,16 @@ class App extends React.Component {
   render () {
     return (
       <div id='app'>
-        <VscodeColorPicker color={this.state.color} presentations={this.state.presentations} onChange={this.onColorChange} />
+        <VscodeColorPicker color={this.state.color} presentation={this.state.presentation} onChange={this.onColorChange} />
         {this.state.color}
       </div>
     )
   }
 
   onColorChange (color) {
-    this.state.presentations[0].label = ColorPicker.formatColor(e, ColorPicker.ColorType.RGB)
-    this.state.presentations[1].label = ColorPicker.formatColor(e, ColorPicker.ColorType.HEX)
-    this.state.presentations[2].label = ColorPicker.formatColor(e, ColorPicker.ColorType.HSL)
     this.setState({
-      color
+      color,
+      presentation: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB)
     })
   }
 }

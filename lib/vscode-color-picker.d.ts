@@ -174,14 +174,9 @@ export declare class Color {
 	static readonly transparent: Color;
 }
 
-export declare interface ColorPickerPresentation {
-  label: string
-}
-
 export declare interface ColorPickerProps {
   color?: string | Color
-  presentations?: ColorPickerPresentation[]
-  presentationIndex?: number
+  presentation?: string
   pixelRatio?: number
 }
 
@@ -205,7 +200,7 @@ export interface Event<T> {
 export declare class ColorPicker {
   static toColor (color: string | Color): Color;
 
-  static formatColor (color: Color, type?: ColorPicker.ColorType): string;
+  static formatColor (color: string | Color, type?: ColorPicker.ColorType): string;
 
   constructor (container: Node, props?: ColorPickerProps);
 
@@ -213,13 +208,9 @@ export declare class ColorPicker {
 
 	setColor (color: string | Color): void;
 	
-	getPresentations (): ColorPickerPresentation[];
+	getPresentation (): string;
 
-  setPresentations (presentations: ColorPickerPresentation[]): void;
-
-  getPresentationIndex (): number;
-
-  setPresentationIndex (index: number): void;
+  setPresentation (presentation: string): void;
 
   getPixelRatio (): number;
 
@@ -233,7 +224,7 @@ export declare class ColorPicker {
 
   readonly onColorFlushed: Event<Color>;
 
-  readonly onPresentationChanged: Event<ColorPickerPresentation>;
+  readonly onPresentationChanged: Event<string>;
 
   dispose (): void;
 }

@@ -5,18 +5,20 @@ import { ColorPicker } from '..'
 new Vue({
   data () {
     let initialColor = '#187'
-    const color = ColorPicker.toColor(initialColor)
+    const colorTypes = [ColorPicker.ColorType.RGB, ColorPicker.ColorType.HEX, ColorPicker.ColorType.HSL]
+    const activeType = 0
     return {
       show: true,
       color: initialColor,
       originalColor: initialColor,
-      presentationIndex: 0,
-      pixelRatio: 1,
-      presentations: [
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.RGB) },
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HEX) },
-        { label: ColorPicker.formatColor(color, ColorPicker.ColorType.HSL) },
-      ]
+      colorTypes,
+      activeType,
+      pixelRatio: 1
+    }
+  },
+  computed: {
+    presentation () {
+      return ColorPicker.formatColor(this.color, this.colorTypes[this.activeType])
     }
   },
   render (h) {
@@ -24,13 +26,15 @@ new Vue({
       ...(this.show ? [h(VscodeColorPicker, {
         props: {
           color: this.color,
-          presentations: this.presentations,
-          presentationIndex: this.presentationIndex,
+          presentation: this.presentation,
           pixelRatio: this.pixelRatio
         },
         on: {
           change: this.onChange,
-          presentation: (p, i) => console.log(p, i)
+          presentation: (p) => {
+            console.log(p)
+            this.activeType = (this.activeType + 1) % this.colorTypes.length
+          }
         },
         ref: 'picker'
       })] : []),
@@ -49,15 +53,11 @@ new Vue({
     ])
   },
   methods: {
-    updatePresentations () {
-      this.presentations[0].label = ColorPicker.formatColor(this.color, ColorPicker.ColorType.RGB)
-      this.presentations[1].label = ColorPicker.formatColor(this.color, ColorPicker.ColorType.HEX)
-      this.presentations[2].label = ColorPicker.formatColor(this.color, ColorPicker.ColorType.HSL)
-    },
     onClickSet () {
       this.color = '#89a'
-      this.originalColor = this.color
-      this.updatePresentations()
+      if (!this.show) {
+        this.originalColor = this.color
+      }
       // this.$refs.picker.setOriginalColor('#987')
     },
     onClick () {
@@ -75,7 +75,6 @@ new Vue({
     },
     onChange (e) {
       this.color = ColorPicker.formatColor(e, ColorPicker.ColorType.RGB)
-      this.updatePresentations()
     }
   }
 }).$mount('#test')

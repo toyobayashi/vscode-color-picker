@@ -1,14 +1,13 @@
 import React from 'react';
-import { Color, ColorPickerPresentation } from '../vscode-color-picker';
+import { Color } from '../vscode-color-picker';
 
 declare interface VscodeColorPickerProps {
   color?: string | Color;
   pixelRatio?: number;
-  presentations?: ColorPickerPresentation[];
-  presentationIndex?: number;
+  presentation?: string;
   onChange?: (e: Color) => any;
   onFlush?: (e: Color) => any;
-  onPresentation?: (e: ColorPickerPresentation, index: number) => any;
+  onPresentation?: (e: string) => any;
   onCreate?: (e: VscodeColorPicker) => void;
 }
 
