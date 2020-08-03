@@ -1,0 +1,19 @@
+name: Publish
+on:
+  push:
+    tags:
+    - 'v*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - run: npm install
+    - run: npm run build
+    - run: npm publish --@tybys:registry=https://registry.npmjs.org/
+      env:
+        CI: 1
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
