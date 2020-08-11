@@ -1,6 +1,6 @@
 {
   "name": "@tybys/vscode-color-picker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The color picker of Visual Studio Code.",
   "main": "./lib/vscode-color-picker.js",
   "module": "./lib/vscode-color-picker.esm.js",
