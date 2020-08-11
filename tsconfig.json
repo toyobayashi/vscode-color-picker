@@ -5,7 +5,9 @@
     "jsx": "react",
     "module": "esnext",
     "target": "es5",
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "noEmitHelpers": true,
+    "importHelpers": true
   },
   "include": [
     "./src/vs/**/*",

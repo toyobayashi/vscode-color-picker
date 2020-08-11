@@ -21,6 +21,8 @@ function getRollupConfig (opts) {
   const rollupTerser = require('rollup-plugin-terser').terser
   const rollupAlias = require('@rollup/plugin-alias')
   const rollupReplace = require('@rollup/plugin-replace')
+  const rollupNodeResolve = require('@rollup/plugin-node-resolve').default
+  const rollupInject = require('@rollup/plugin-inject')
 
   const outputFilename = minify ? getPath(outputPrefix, `${output}.min.js`) : getPath(outputPrefix, `${output}.js`)
   const fmt = format || 'umd'
@@ -28,6 +30,14 @@ function getRollupConfig (opts) {
     input: {
       input: getPath(entry),
       plugins: [
+        ...(format !== 'es' ? [
+          rollupNodeResolve(),
+          // https://github.com/microsoft/TypeScript/issues/36841#issuecomment-669014853
+          rollupInject({
+            '__classPrivateFieldGet': ['tslib', '__classPrivateFieldGet'],
+            '__classPrivateFieldSet': ['tslib', '__classPrivateFieldSet'],
+          }),
+        ] : []),
         rollupReplace({
           __PKG_VERSION__: JSON.stringify(require('./package.json').version)
         }),
